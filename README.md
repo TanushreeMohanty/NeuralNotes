@@ -6,3 +6,4 @@ AI-Powered Notes &amp; Search Web App
 
 ### Features
 - User Authentication 
+- Notes CRUD Management

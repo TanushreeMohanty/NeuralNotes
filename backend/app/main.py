@@ -114,3 +114,45 @@ def delete_note(
 @app.get("/")
 async def root():
     return {"message": "NeuralNotes Backend is live and fast!"}
+
+# --- NEW: Update an existing note ---
+@app.put("/notes/{note_id}")
+def update_note(
+    note_id: int, 
+    title: str, 
+    content: str, 
+    db: Session = Depends(database.get_db), 
+    current_user: database.User = Depends(auth.get_current_user)
+):
+    note = db.query(database.Note).filter(
+        database.Note.id == note_id, 
+        database.Note.owner_id == current_user.id
+    ).first()
+    
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    note.title = title
+    note.content = content
+    db.commit()
+    return {"message": "Updated!"}
+
+# --- NEW: Semantic Search (AI Search) ---
+@app.get("/search")
+def search_notes(
+    query: str, 
+    db: Session = Depends(database.get_db), 
+    current_user: database.User = Depends(auth.get_current_user)
+):
+    # Generate vector for the search query
+    query_vector = embeddings.generate_vector(query)
+    
+    # Perform vector similarity search using pgvector
+    results = db.query(database.Note).filter(
+        database.Note.owner_id == current_user.id
+    ).order_by(database.Note.embedding.l2_distance(query_vector)).limit(5).all()
+    
+    return [
+        {"id": n.id, "title": n.title, "content": n.content} 
+        for n in results
+    ]
