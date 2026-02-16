@@ -1,0 +1,42 @@
+services:
+  db:
+    image: ankane/pgvector:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: notes_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d notes_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/notes_db
+      # For now, you can leave this empty or use a placeholder
+      OPENAI_API_KEY: "your-key-here"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_URL: http://localhost:8000
