@@ -1,42 +1,53 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* --- Base Theme & Note Cards --- */
+.note-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+  background: white;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.note-card:hover {
+  transform: translateY(-4px);
+  /* Soft pink shadow to match tanu theme */
+  box-shadow: 0 10px 15px -3px rgba(244, 114, 182, 0.3); 
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* --- Authentication Glassmorphism --- */
+.auth-glass, .login-container {
+  /* Fixed: Changed from dark brown to semi-transparent white */
+  background: rgba(255, 255, 255, 0.85); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 182, 213, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(244, 114, 182, 0.2);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* --- Form Inputs & Focus --- */
+input:focus, textarea:focus {
+  border-color: #f472b6; /* Pink-400 */
+  box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.3);
+  outline: none;
 }
 
-.card {
-  padding: 2em;
+/* --- Custom Pink Scrollbar --- */
+textarea::-webkit-scrollbar {
+  width: 6px;
 }
 
-.read-the-docs {
-  color: #888;
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: #f472b6; /* Pink-400 */
+  border-radius: 10px;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-pop {
+  animation: fadeIn 0.3s ease-out;
 }

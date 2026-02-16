@@ -7,6 +7,9 @@ services:
       POSTGRES_DB: notes_db
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+    volumes:
+      # FIX: Ensure this path matches your folder structure exactly
+      - ./backend/db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d notes_db"]
       interval: 5s
@@ -23,8 +26,10 @@ services:
       - ./backend:/app
     environment:
       DATABASE_URL: postgresql://user:password@db:5432/notes_db
-      # For now, you can leave this empty or use a placeholder
-      OPENAI_API_KEY: "your-key-here"
+      # Add this for your new User System logic
+      SECRET_KEY: "SUPER_SECRET_KEY_FOR_IAA_INTERNSHIP" 
+      # We are using sentence-transformers locally now
+      USE_LOCAL_AI: "true"
     depends_on:
       db:
         condition: service_healthy
