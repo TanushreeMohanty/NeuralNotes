@@ -8,7 +8,6 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
-      # FIX: Ensure this path matches your folder structure exactly
       - ./backend/db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d notes_db"]
@@ -24,12 +23,17 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      # Anonymous volumes to protect container-side installs
+      - /usr/local/lib/python3.11/site-packages
+      - /app/venv
+      # Named volume for AI model persistence (Internal to Docker)
+      - huggingface_cache:/root/.cache/huggingface
     environment:
       DATABASE_URL: postgresql://user:password@db:5432/notes_db
-      # Add this for your new User System logic
       SECRET_KEY: "SUPER_SECRET_KEY_FOR_IAA_INTERNSHIP" 
-      # We are using sentence-transformers locally now
       USE_LOCAL_AI: "true"
+      # FIXED SYNTAX HERE:
+      HF_HOME: "/root/.cache/huggingface"
     depends_on:
       db:
         condition: service_healthy
@@ -45,3 +49,6 @@ services:
       - /app/node_modules
     environment:
       VITE_API_URL: http://localhost:8000
+
+volumes:
+  huggingface_cache:

@@ -1,6 +1,7 @@
+// no issues
 import React, { useState, useEffect } from "react";
 import { Search, Plus, StickyNote, LogOut, Trash2 } from "lucide-react";
-import api from "./api";
+import api from "./services/api";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import "./App.css";
@@ -18,7 +19,7 @@ function App() {
   const [newNote, setNewNote] = useState({ title: "", content: "" });
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingNote, setEditingNote] = useState(null); // Track the note being edited
-
+  const [searchQuery, setSearchQuery] = useState("");
   const fetchNotes = async () => {
     try {
       const response = await api.get("/notes");
@@ -84,6 +85,25 @@ function App() {
     setNotes([]);
   };
 
+  const handleSearch = async (query) => {
+    // If user clears the input, immediately show ALL notes
+    if (!query || query.trim() === "") {
+      fetchNotes();
+      return;
+    }
+
+    try {
+      const response = await api.get(
+        `/notes/search?query=${encodeURIComponent(query.trim())}`,
+      );
+      // Replace the current list with only the AI-filtered results
+      setNotes(response.data);
+    } catch (error) {
+      console.error("Search failed:", error);
+      fetchNotes(); // Fallback to all notes on error
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <>
@@ -128,6 +148,12 @@ function App() {
               <input
                 type="text"
                 placeholder="Semantic search..."
+                value={searchQuery}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSearchQuery(val); // Updates what you see in the box
+                  handleSearch(val); // Immediately calls the AI filtering logic
+                }}
                 className="pl-10 pr-4 py-2 w-full rounded-lg border border-gray-200 focus:ring-2 focus:ring-pink-400 outline-none"
               />
             </div>
@@ -252,7 +278,9 @@ function App() {
                       {note.title}
                     </h3>
                   </div>
-                  <p className="text-gray-600 text-sm leading-relax">
+                  <p className="text-gray-600 text-sm leading-relaxed break-words">
+                    {" "}
+                    {/* Fixed typo & added break-words */}
                     {note.content}
                   </p>
                 </>

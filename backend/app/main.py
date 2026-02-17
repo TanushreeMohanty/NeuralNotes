@@ -5,10 +5,14 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import List
 
-# Import local modules using relative imports
+# Import local modules
 from . import database, auth, embeddings 
 
-# Initialize database tables
+# CRITICAL FIX: Import models explicitly to register them with Base.metadata
+# This ensures SQLAlchemy knows which tables to create in the database
+from .database import User, Note 
+
+# This call now correctly finds the 'users' and 'notes' tables
 database.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="NeuralNotes API")
@@ -16,7 +20,7 @@ app = FastAPI(title="NeuralNotes API")
 # Updated CORS to strictly allow your React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["http://localhost:5173"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,12 +30,13 @@ app.add_middleware(
 
 @app.post("/signup", status_code=status.HTTP_201_CREATED)
 def signup(username: str, password: str, db: Session = Depends(database.get_db)):
-    db_user = db.query(database.User).filter(database.User.username == username).first()
+    # Check if user already exists
+    db_user = db.query(User).filter(User.username == username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
     
     hashed_pw = auth.get_password_hash(password)
-    new_user = database.User(username=username, hashed_password=hashed_pw)
+    new_user = User(username=username, hashed_password=hashed_pw)
     db.add(new_user)
     db.commit()
     return {"message": "User created successfully"}
@@ -61,10 +66,10 @@ def create_note(
     title: str, 
     content: str, 
     db: Session = Depends(database.get_db), 
-    current_user: database.User = Depends(auth.get_current_user)
+    current_user: User = Depends(auth.get_current_user)
 ):
     vector = embeddings.generate_vector(content) 
-    new_note = database.Note(
+    new_note = Note(
         title=title, 
         content=content, 
         embedding=vector, 
@@ -72,36 +77,29 @@ def create_note(
     )
     db.add(new_note)
     db.commit()
-    return {"message": "Note saved!"}
+    db.refresh(new_note)
+    return {"message": "Note saved!", "id": new_note.id}
 
-# NEW: Fetch notes belonging only to the current user
 @app.get("/notes")
 def get_notes(
     db: Session = Depends(database.get_db), 
-    current_user: database.User = Depends(auth.get_current_user)
+    current_user: User = Depends(auth.get_current_user)
 ):
-    notes = db.query(database.Note).filter(database.Note.owner_id == current_user.id).all()
-    
-    # Manually convert to a list of dicts to avoid the serialization error
+    notes = db.query(Note).filter(Note.owner_id == current_user.id).all()
     return [
-        {
-            "id": n.id,
-            "title": n.title,
-            "content": n.content,
-            "created_at": n.created_at.isoformat() if hasattr(n, 'created_at') else None
-        } 
+        {"id": n.id, "title": n.title, "content": n.content} 
         for n in notes
     ]
-# NEW: Delete a specific note
+
 @app.delete("/notes/{note_id}")
 def delete_note(
     note_id: int, 
     db: Session = Depends(database.get_db), 
-    current_user: database.User = Depends(auth.get_current_user)
+    current_user: User = Depends(auth.get_current_user)
 ):
-    note = db.query(database.Note).filter(
-        database.Note.id == note_id, 
-        database.Note.owner_id == current_user.id
+    note = db.query(Note).filter(
+        Note.id == note_id, 
+        Note.owner_id == current_user.id
     ).first()
     
     if not note:
@@ -111,22 +109,17 @@ def delete_note(
     db.commit()
     return {"message": "Note deleted successfully"}
 
-@app.get("/")
-async def root():
-    return {"message": "NeuralNotes Backend is live and fast!"}
-
-# --- NEW: Update an existing note ---
 @app.put("/notes/{note_id}")
 def update_note(
     note_id: int, 
     title: str, 
     content: str, 
     db: Session = Depends(database.get_db), 
-    current_user: database.User = Depends(auth.get_current_user)
+    current_user: User = Depends(auth.get_current_user)
 ):
-    note = db.query(database.Note).filter(
-        database.Note.id == note_id, 
-        database.Note.owner_id == current_user.id
+    note = db.query(Note).filter(
+        Note.id == note_id, 
+        Note.owner_id == current_user.id
     ).first()
     
     if not note:
@@ -134,25 +127,35 @@ def update_note(
     
     note.title = title
     note.content = content
+    note.embedding = embeddings.generate_vector(content) 
+    
     db.commit()
-    return {"message": "Updated!"}
+    return {"message": "Updated successfully!"}
 
-# --- NEW: Semantic Search (AI Search) ---
-@app.get("/search")
+# --- SEARCH LOGIC ---
+
+@app.get("/notes/search")
 def search_notes(
     query: str, 
     db: Session = Depends(database.get_db), 
-    current_user: database.User = Depends(auth.get_current_user)
+    current_user: User = Depends(auth.get_current_user)
 ):
-    # Generate vector for the search query
     query_vector = embeddings.generate_vector(query)
     
-    # Perform vector similarity search using pgvector
-    results = db.query(database.Note).filter(
-        database.Note.owner_id == current_user.id
-    ).order_by(database.Note.embedding.l2_distance(query_vector)).limit(5).all()
+    # Using L2 distance for vector similarity search
+    # 1.5 is the threshold; lower values are stricter
+    results = db.query(Note).filter(
+        Note.owner_id == current_user.id,
+        Note.embedding.l2_distance(query_vector) < 1.3
+    ).order_by(
+        Note.embedding.l2_distance(query_vector)
+    ).limit(10).all()
     
     return [
         {"id": n.id, "title": n.title, "content": n.content} 
         for n in results
     ]
+
+@app.get("/")
+async def root():
+    return {"message": "NeuralNotes Backend is live!"}

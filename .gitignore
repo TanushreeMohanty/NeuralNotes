@@ -1,14 +1,28 @@
-# Python
+# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
+.venv/
 venv/
+ENV/
 .env
 
-# Node
+# --- Node / Frontend ---
 node_modules/
 dist/
+build/
 .eslintcache
+.DS_Store
 
-# Docker
+# --- Docker & Database ---
+# Local database storage folders
+postgres_data/
 .data/
+
+# AI Model Caches (Keep these off GitHub to save space)
+model_cache/
+huggingface_cache/
+.cache/
+
+# Docker specific
+.docker-compose.un~

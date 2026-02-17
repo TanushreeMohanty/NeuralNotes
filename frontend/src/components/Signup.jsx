@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signup } from '../api';
+import { signup } from '../services/api';
 
 const Signup = ({ onSignupSuccess, onToggleLogin }) => {
   const [username, setUsername] = useState('');

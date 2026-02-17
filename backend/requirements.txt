@@ -1,19 +1,27 @@
-# Web Server
+# --- Core Web Server ---
 fastapi==0.109.0
 uvicorn==0.27.0
 python-multipart==0.0.6
 
-# Database & Vectors
+# --- Database & Vectors ---
 sqlalchemy==2.0.25
 psycopg2-binary==2.9.9
 pgvector==0.2.4
 python-dotenv==1.0.1
 
-# Security & Auth (Fixed for Passlib compatibility)
+# --- Security & Auth ---
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 bcrypt==3.2.0
 
-# # AI & LLM
-# openai==1.12.0
-# sentence-transformers==2.2.2
+# --- Local AI Search Engine ---
+# Pinning huggingface-hub to 0.24.1 restores the 'cached_download' function 
+# required by older versions of sentence-transformers.
+huggingface-hub==0.24.1
+sentence-transformers==2.2.2
+numpy<2.0.0
+
+# --- Torch CPU Installation ---
+# This ensures Docker doesn't try to download the 2GB+ GPU version.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.1.2+cpu
