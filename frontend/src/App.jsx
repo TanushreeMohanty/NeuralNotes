@@ -121,7 +121,6 @@ function App() {
       <div className="max-w-4xl mx-auto">
         <header className="flex justify-between items-center mb-8">
           <div>
-            {/* Added personalized greeting */}
             <h1 className="text-3xl font-bold text-gray-800">
               Welcome, {activeUser} ✨
             </h1>
@@ -208,7 +207,6 @@ function App() {
               }`}
             >
               {editingNote?.id === note.id ? (
-                /* Edit Form Mode */
                 <div className="space-y-2">
                   <input
                     className="w-full font-bold text-lg outline-none border-b border-pink-200 focus:border-pink-500 transition-colors"
@@ -246,9 +244,7 @@ function App() {
                   </div>
                 </div>
               ) : (
-                /* View Mode */
                 <>
-                  {/* Container for Edit and Delete buttons */}
                   <div className="absolute top-4 right-4 flex items-center gap-3">
                     <button
                       onClick={() => setEditingNote(note)}
@@ -273,7 +269,6 @@ function App() {
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed break-words">
                     {" "}
-                    {/* Fixed typo & added break-words */}
                     {note.content}
                   </p>
                 </>
