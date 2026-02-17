@@ -130,19 +130,13 @@ function App() {
           <div>
             {/* Added personalized greeting */}
             <h1 className="text-3xl font-bold text-gray-800">
-              AI Notes for {activeUser} ✨
+              Welcome, {activeUser} ✨
             </h1>
             <p className="text-sm text-pink-500 font-medium">
               Authentication active • Secure session
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <button
-              onClick={handleLogout}
-              className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-            >
-              <LogOut size={22} />
-            </button>
             <div className="relative w-64">
               <Search className="absolute left-3 top-2.5 text-gray-400 size-5" />
               <input
@@ -157,6 +151,12 @@ function App() {
                 className="pl-10 pr-4 py-2 w-full rounded-lg border border-gray-200 focus:ring-2 focus:ring-pink-400 outline-none"
               />
             </div>
+            <button
+              onClick={handleLogout}
+              className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+            >
+              <LogOut size={22} />
+            </button>
           </div>
         </header>
 

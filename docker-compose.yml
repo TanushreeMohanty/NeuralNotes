@@ -23,16 +23,13 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      # Anonymous volumes to protect container-side installs
       - /usr/local/lib/python3.11/site-packages
       - /app/venv
-      # Named volume for AI model persistence (Internal to Docker)
       - huggingface_cache:/root/.cache/huggingface
     environment:
       DATABASE_URL: postgresql://user:password@db:5432/notes_db
-      SECRET_KEY: "SUPER_SECRET_KEY_FOR_IAA_INTERNSHIP" 
+      SECRET_KEY: "" 
       USE_LOCAL_AI: "true"
-      # FIXED SYNTAX HERE:
       HF_HOME: "/root/.cache/huggingface"
     depends_on:
       db:
