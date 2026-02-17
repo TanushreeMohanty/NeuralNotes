@@ -1,4 +1,3 @@
-// no issues
 import React, { useState, useEffect } from "react";
 import { Search, Plus, StickyNote, LogOut, Trash2 } from "lucide-react";
 import api from "./services/api";
@@ -11,14 +10,13 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     !!localStorage.getItem("token"),
   );
-  // Added state to track the active user's name
   const [activeUser, setActiveUser] = useState(
     localStorage.getItem("username") || "User",
   );
   const [view, setView] = useState("login");
   const [newNote, setNewNote] = useState({ title: "", content: "" });
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingNote, setEditingNote] = useState(null); // Track the note being edited
+  const [editingNote, setEditingNote] = useState(null); 
   const [searchQuery, setSearchQuery] = useState("");
   const fetchNotes = async () => {
     try {
@@ -46,7 +44,6 @@ function App() {
   const handleUpdateNote = async (e) => {
     e.preventDefault();
     try {
-      // Matches the query parameter style used in your Add Note function
       await api.put(
         `/notes/${editingNote.id}?title=${encodeURIComponent(editingNote.title)}&content=${encodeURIComponent(editingNote.content)}`,
       );
@@ -71,22 +68,20 @@ function App() {
     }
   };
 
-  // Updated Login Success to store username
   const onLoginSuccess = (username) => {
-    localStorage.setItem("username", username); // Store username in localStorage
+    localStorage.setItem("username", username); 
     setActiveUser(username);
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("username"); // Clear username on logout
+    localStorage.removeItem("username"); 
     setIsAuthenticated(false);
     setNotes([]);
   };
 
   const handleSearch = async (query) => {
-    // If user clears the input, immediately show ALL notes
     if (!query || query.trim() === "") {
       fetchNotes();
       return;
@@ -96,11 +91,10 @@ function App() {
       const response = await api.get(
         `/notes/search?query=${encodeURIComponent(query.trim())}`,
       );
-      // Replace the current list with only the AI-filtered results
       setNotes(response.data);
     } catch (error) {
       console.error("Search failed:", error);
-      fetchNotes(); // Fallback to all notes on error
+      fetchNotes(); 
     }
   };
 
@@ -109,7 +103,6 @@ function App() {
       <>
         {view === "login" ? (
           <Login
-            // Pass the custom login success handler
             onLoginSuccess={onLoginSuccess}
             onToggleSignup={() => setView("signup")}
           />
@@ -145,8 +138,8 @@ function App() {
                 value={searchQuery}
                 onChange={(e) => {
                   const val = e.target.value;
-                  setSearchQuery(val); // Updates what you see in the box
-                  handleSearch(val); // Immediately calls the AI filtering logic
+                  setSearchQuery(val); 
+                  handleSearch(val); 
                 }}
                 className="pl-10 pr-4 py-2 w-full rounded-lg border border-gray-200 focus:ring-2 focus:ring-pink-400 outline-none"
               />

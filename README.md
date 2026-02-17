@@ -13,13 +13,13 @@ AI-Powered Notes &amp; Search Web App
 - Notes CRUD Management
 - AI Search Bar
 
-### 🌟 AI Search Feature
+### AI Search Feature
 The core of this application is its ability to handle natural-language queries.
 - **Semantic Mapping**: User queries are transformed into 384-dimensional vectors.
 - **Balanced Filtering**: Uses an **L2 distance threshold of 1.3** to effectively filter unrelated noise while maintaining high recall for related concepts.
 - **Example**: Searching for "airplane" will successfully identify a note about "aviation academy" because the AI understands the underlying context.
 
-### 🚀 Setup & Installation (Full Manual)
+### Setup & Installation (Full Manual)
 
 #### Clone the Repository
 Open your terminal and run:
@@ -28,7 +28,7 @@ git clone [https://github.com/your-username/neural-notes.git](https://github.com
 cd neural-notes
 ```
 
-#### 🚀 Getting Started
+#### Getting Started
 1. Environment Configuration
 Create a .env file in the root directory and add the following:
 ```env
@@ -65,7 +65,7 @@ VITE_API_URL=http://localhost:8000
 - Vector Dimensions: Assumed a 384-dimension vector is sufficient for short-form notes, providing high speed without heavy RAM usage.
 
 ### Future Improvements
-- *HNSW Indexing*: Implement HNSW (Hierarchical Navigable Small World) in pgvector to speed up search for large datasets.
-- *Metadata Filtering*: Allow users to filter search results by date or tags alongside the semantic query.
+- **HNSW Indexing**: Implement HNSW (Hierarchical Navigable Small World) in pgvector to speed up search for large datasets.
+- **Metadata Filtering**: Allow users to filter search results by date or tags alongside the semantic query.
 
 

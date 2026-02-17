@@ -15,11 +15,10 @@ build/
 .DS_Store
 
 # --- Docker & Database ---
-# Local database storage folders
 postgres_data/
 .data/
 
-# AI Model Caches (Keep these off GitHub to save space)
+# AI Model Caches 
 model_cache/
 huggingface_cache/
 .cache/

@@ -2,7 +2,6 @@ from sqlalchemy import create_engine, Column, Integer, String, Text, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-# Handle pgvector optionally so the app doesn't crash without it
 try:
     from pgvector.sqlalchemy import Vector
     HAS_PGVECTOR = True
@@ -28,11 +27,10 @@ class Note(Base):
     title = Column(String)
     content = Column(Text)
     
-    # Only use Vector type if the library is installed
     if HAS_PGVECTOR:
         embedding = Column(Vector(384))
     else:
-        embedding = Column(Text, nullable=True) # Fallback to plain text column
+        embedding = Column(Text, nullable=True)
     
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="notes")

@@ -9,7 +9,6 @@ const Login = ({ onLoginSuccess, onToggleSignup }) => {
     e.preventDefault();
     try {
       await login(username, password);
-      // Updated to pass the username string back to App.jsx
       onLoginSuccess(username); 
     } catch (err) {
       alert("Login failed. Check your credentials.");

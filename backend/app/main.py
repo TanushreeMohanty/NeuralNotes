@@ -5,19 +5,14 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import List
 
-# Import local modules
 from . import database, auth, embeddings 
 
-# CRITICAL FIX: Import models explicitly to register them with Base.metadata
-# This ensures SQLAlchemy knows which tables to create in the database
 from .database import User, Note 
 
-# This call now correctly finds the 'users' and 'notes' tables
 database.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="NeuralNotes API")
 
-# Updated CORS to strictly allow your React frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"], 
@@ -30,7 +25,6 @@ app.add_middleware(
 
 @app.post("/signup", status_code=status.HTTP_201_CREATED)
 def signup(username: str, password: str, db: Session = Depends(database.get_db)):
-    # Check if user already exists
     db_user = db.query(User).filter(User.username == username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
@@ -142,8 +136,6 @@ def search_notes(
 ):
     query_vector = embeddings.generate_vector(query)
     
-    # Using L2 distance for vector similarity search
-    # 1.5 is the threshold; lower values are stricter
     results = db.query(Note).filter(
         Note.owner_id == current_user.id,
         Note.embedding.l2_distance(query_vector) < 1.3

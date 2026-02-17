@@ -10,7 +10,6 @@ const Signup = ({ onSignupSuccess, onToggleLogin }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Correctly hits your @app.post("/signup")
       await signup(username, password);
       alert("Account created successfully! Now you can login.");
       onSignupSuccess(); 

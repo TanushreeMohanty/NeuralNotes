@@ -8,10 +8,9 @@
 
 body {
   margin: 0;
-  /* Natural scrolling enabled by removing place-items: center */
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f9fafb; /* Light gray to let pink accents pop */
+  background-color: #f9fafb; 
   color: #1f2937;
 }
 

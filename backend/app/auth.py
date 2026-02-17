@@ -1,14 +1,14 @@
-from datetime import datetime, timedelta, timezone # Updated for modern Python
+from datetime import datetime, timedelta, timezone 
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from .database import get_db, User # Use relative import
+from .database import get_db, User 
 
-# Configurations
-SECRET_KEY = "SUPER_SECRET_KEY_FOR_IAA_INTERNSHIP" 
+
+SECRET_KEY = "" 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -31,7 +31,6 @@ def authenticate_user(db: Session, username: str, password: str):
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
-    # Use timezone-aware UTC to avoid deprecation warnings
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

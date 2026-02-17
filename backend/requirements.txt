@@ -15,13 +15,10 @@ passlib[bcrypt]==1.7.4
 bcrypt==3.2.0
 
 # --- Local AI Search Engine ---
-# Pinning huggingface-hub to 0.24.1 restores the 'cached_download' function 
-# required by older versions of sentence-transformers.
 huggingface-hub==0.24.1
 sentence-transformers==2.2.2
 numpy<2.0.0
 
 # --- Torch CPU Installation ---
-# This ensures Docker doesn't try to download the 2GB+ GPU version.
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.1.2+cpu

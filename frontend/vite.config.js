@@ -1,14 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite' // Add this import
+import tailwindcss from '@tailwindcss/vite' 
 
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(), // Add this to the plugins list
+    tailwindcss(), 
   ],
   server: {
-    host: '0.0.0.0', // Required for Docker visibility
+    host: '0.0.0.0', 
     port: 5173,
   }
 })
